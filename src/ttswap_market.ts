@@ -185,9 +185,7 @@ export function handle_e_initMetaGood(event: e_initMetaGood): void {
         }
 
         marketstate.marketCreator = event.transaction.from.toHexString();
-        marketstate.marketConfig = fetchMarketConfig(
-                Address.fromString(MARKET_ADDRESS)
-        );
+        marketstate.marketConfig = fetchMarketConfig(event.address);
         marketstate.totalInvestValue = trade_value;
         marketstate.userCount = BigInt.fromU32(1);
         marketstate.txCount = BigInt.fromU32(1);
@@ -351,11 +349,10 @@ export function handle_e_initGood(event: e_initGood): void {
         let normalgoodid = event.params._goodid.toHexString();
         let stakecontruct = event.params._construct.mod(BI_128);
         let proofid_BG = event.params._proofNo;
-        let marketmanage = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
-        );
+        let marketmanage = TTSwap_Market.bind(event.address);
+
         let goodowner = event.transaction.from.toHexString();
-        let proofstate = marketmanage.try_getProofState(proofid_BG);
+        let proofstate = marketmanage.try_getProofState(event.params._proofNo);
 
         let trade_value = event.params._normalinitial.mod(BI_128);
         let trade_quantity = event.params._normalinitial.div(BI_128);
@@ -365,6 +362,8 @@ export function handle_e_initGood(event: e_initGood): void {
         let trade_normalgood_contruct = ZERO_BI;
         if (!proofstate.reverted) {
                 trade_value = proofstate.value.state.div(BI_128);
+                trade_normalgood_quantity = proofstate.value.valueinvest;
+                trade_normalgood_contruct = proofstate.value.invest;
                 trade_normalgood_quantity = proofstate.value.invest.mod(BI_128);
                 trade_normalgood_contruct = proofstate.value.invest.div(BI_128);
                 trade_valuegood_quantity =
@@ -372,6 +371,7 @@ export function handle_e_initGood(event: e_initGood): void {
                 trade_valuegood_contruct =
                         proofstate.value.valueinvest.div(BI_128);
         }
+
         let valuegoodfee = event.params._value
                 .div(BI_128)
                 .minus(trade_valuegood_quantity);
@@ -524,7 +524,7 @@ export function handle_e_initGood(event: e_initGood): void {
         }
 
         let goodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(Address.fromString(valuegoodid.toString()));
         if (!goodcurrentstate.reverted) {
                 value_good.currentValue =
@@ -705,7 +705,7 @@ export function handle_e_buyGood(event: e_buyGood): void {
         }
 
         let goodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(Address.fromString(fromgood.toString()));
         if (!goodcurrentstate.reverted) {
                 from_good.currentValue =
@@ -758,7 +758,7 @@ export function handle_e_buyGood(event: e_buyGood): void {
         }
 
         let togoodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(Address.fromString(togood.toString()));
         if (!togoodcurrentstate.reverted) {
                 to_good.currentValue =
@@ -915,7 +915,7 @@ export function handle_e_buyGoodForPay(event: e_buyGoodForPay): void {
         }
 
         let goodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(Address.fromString(fromgood.toString()));
         if (!goodcurrentstate.reverted) {
                 from_good.currentValue =
@@ -968,7 +968,7 @@ export function handle_e_buyGoodForPay(event: e_buyGoodForPay): void {
         }
 
         let togoodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(Address.fromString(togood.toString()));
         if (!togoodcurrentstate.reverted) {
                 to_good.currentValue =
@@ -1086,9 +1086,7 @@ export function handle_e_collectProof(event: e_collectProof): void {
                 proof.createTime = event.block.timestamp;
         }
 
-        let marketmanage = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
-        );
+        let marketmanage = TTSwap_Market.bind(event.address);
         let proofstate = marketmanage.try_getProofState(event.params._proofNo);
 
         if (!proofstate.reverted) {
@@ -1137,7 +1135,7 @@ export function handle_e_collectProof(event: e_collectProof): void {
         }
 
         let goodcurrentstate = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
+                event.address
         ).try_getGoodState(event.params._normalGoodNo);
         if (!goodcurrentstate.reverted) {
                 normal_good.contructFee =
@@ -1183,7 +1181,7 @@ export function handle_e_collectProof(event: e_collectProof): void {
                 }
 
                 let goodcurrentstate2 = TTSwap_Market.bind(
-                        Address.fromString(MARKET_ADDRESS)
+                        event.address
                 ).try_getGoodState(event.params._valueGoodNo);
                 if (!goodcurrentstate2.reverted) {
                         value_good.contructFee =
@@ -1380,9 +1378,7 @@ export function handle_e_investGood(event: e_investGood): void {
         let stakecontruct = event.params._value.mod(BI_128);
         let valuegoodid = event.params._valueGoodNo.toHexString();
         let proofNo = event.params._proofNo.toString();
-        let marketmanage = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
-        );
+        let marketmanage = TTSwap_Market.bind(event.address);
         let proofstate = marketmanage.try_getProofState(event.params._proofNo);
         let invest_value = ZERO_BI;
         let normal_contructFee = ZERO_BI;
@@ -1448,7 +1444,7 @@ export function handle_e_investGood(event: e_investGood): void {
                 }
 
                 let normalcurrentstate = TTSwap_Market.bind(
-                        Address.fromString(MARKET_ADDRESS)
+                        event.address
                 ).try_getGoodState(Address.fromString(normalgoodid));
                 if (!normalcurrentstate.reverted) {
                         normal_good.currentValue =
@@ -1632,7 +1628,7 @@ export function handle_e_investGood(event: e_investGood): void {
                         }
 
                         let valuecurrentstate = TTSwap_Market.bind(
-                                Address.fromString(MARKET_ADDRESS)
+                                event.address
                         ).try_getGoodState(Address.fromString(valuegoodid));
                         if (!valuecurrentstate.reverted) {
                                 value_good.currentValue =
@@ -1933,9 +1929,7 @@ export function handle_e_disinvestProof(event: e_disinvestProof): void {
         let normalgoodid = event.params._normalGoodNo.toHexString();
         let valuegoodid = event.params._valueGoodNo.toHexString();
         let proofNo = event.params._proofNo.toString();
-        let marketmanage = TTSwap_Market.bind(
-                Address.fromString(MARKET_ADDRESS)
-        );
+        let marketmanage = TTSwap_Market.bind(event.address);
         let proofstate = marketmanage.try_getProofState(event.params._proofNo);
         if (!proofstate.reverted) {
                 let invest_value = proofstate.value.state.div(BI_128);
@@ -1996,7 +1990,7 @@ export function handle_e_disinvestProof(event: e_disinvestProof): void {
                 }
 
                 let normalcurrentstate = TTSwap_Market.bind(
-                        Address.fromString(MARKET_ADDRESS)
+                        event.address
                 ).try_getGoodState(Address.fromString(normalgoodid.toString()));
                 if (!normalcurrentstate.reverted) {
                         normal_good.currentValue =
@@ -2130,7 +2124,7 @@ export function handle_e_disinvestProof(event: e_disinvestProof): void {
                         }
 
                         let valuecurrentstate = TTSwap_Market.bind(
-                                Address.fromString(MARKET_ADDRESS)
+                                event.address
                         ).try_getGoodState(
                                 Address.fromString(valuegoodid.toString())
                         );

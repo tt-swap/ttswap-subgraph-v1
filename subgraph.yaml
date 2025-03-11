@@ -7,11 +7,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: TTSwap_Market
-    network: sepolia
+    network: chapel
     source:
-      address: "0x2d5ab924508ccbd4b7e062b8c16ef3d40083d356"
+      address: "0x8716ab9bF5dDF741353734F8A7F2aCbD1efD828d"
       abi: TTSwap_Market
-      startBlock: 7844892
+      startBlock: 48992255
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -69,11 +69,11 @@ dataSources:
           handler: handle_e_transferdel
   - kind: ethereum/contract
     name: TTSwap_Token
-    network: sepolia
+    network: chapel
     source:
-      address: "0x01124302783532f9df1726d8ffbec9145a97aa17"
+      address: "0xed3e94cc90f03288ec1409c1d11d826789984bbd"
       abi: TTSwap_Token
-      startBlock: 7844803
+      startBlock: 48992226
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

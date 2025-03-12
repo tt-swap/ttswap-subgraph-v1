@@ -9,9 +9,9 @@ dataSources:
     name: TTSwap_Market
     network: chapel
     source:
-      address: "0x8716ab9bF5dDF741353734F8A7F2aCbD1efD828d"
+      address: "0x60a65019657226783036c38aed5da18a55d569e7"
       abi: TTSwap_Market
-      startBlock: 48992255
+      startBlock: 49008171
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
